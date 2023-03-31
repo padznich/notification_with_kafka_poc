@@ -1,0 +1,12 @@
+# Editors config
+.idea/
+
+# Local development
+__pycache__/
+*.pyc
+.DS_Store
+.python-version
+
+# Tests
+.pytest_cache/
+.coverage

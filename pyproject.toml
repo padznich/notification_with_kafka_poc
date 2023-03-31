@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "notification_with_kafka_poc"
+version = "0.1.0"
+description = "Notification service POC"
+authors = ["Pavel Slabko <slabkopg@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Django = "^4.1.7"
+psycopg2-binary = "^2.9.5"
+
+[tool.poetry.group.dev.dependencies]
+django-extensions = "^3.2.1"
+pre-commit = "^3.2.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.pytest_cache
+  | \.idea
+  | \.venv
+)/
+'''
+
+[tool.isort]
+profile = "black"
+src_paths = ["src"]
+
+[tool.bandit]
+tests = ["B201", "B301"]
+skips = ["B101", "B601"]

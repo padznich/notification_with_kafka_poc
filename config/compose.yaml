@@ -1,0 +1,91 @@
+version: "3.8"
+networks:
+  notification-poc:
+    ipam:
+      driver: default
+
+volumes:
+  kafka-volume:
+  postgres-volume:
+
+services:
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    container_name: notifications_zookeeper
+    networks:
+      - notification-poc
+    ports:
+      - '2181:2181'
+    env_file:
+      - kafka/zookeeper.env
+
+  kafka:
+    image: bitnami/kafka:latest
+    container_name: notifications_kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - '29092:29092'
+      - '9092:9092'
+      - '9093:9093'
+    env_file:
+      - kafka/kafka.env
+    volumes:
+      - kafka-volume:/bitnami/kafka
+    networks:
+      - notification-poc
+
+  postgres:
+    image: postgres:latest
+    container_name: notifications_postgres
+    ports:
+      - 5432:5432
+    env_file:
+      - postgres/postgres.env
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data
+    networks:
+      - notification-poc
+
+  vault:
+    image: vault:latest
+    container_name: notification_vault
+    ports:
+      - 8200:8200
+    env_file:
+      - vault/vault.env
+    restart: always
+    networks:
+      - notification-poc
+    cap_add:
+      - IPC_LOCK
+    entrypoint: vault server -dev=true -dev-listen-address=0.0.0.0:8200
+
+  django:
+    image: notification-django-poc
+    container_name: notification_django
+    restart: always
+    build:
+      context: ..
+      dockerfile: config/app/service.Dockerfile
+      target: dev
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    env_file:
+      - app/app.env
+    environment:
+      WAIT_HOSTS: postgres:5432
+    networks:
+      - notification-poc
+    depends_on:
+      - postgres
+      - kafka
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: "${DOCKER_HEALTHCHECK_TEST:-curl localhost:8000/}"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3

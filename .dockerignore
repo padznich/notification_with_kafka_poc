@@ -1,0 +1,6 @@
+.git
+.gitignore
+.gitattributes
+.idea
+.coverage
+.pytest_cache
