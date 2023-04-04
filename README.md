@@ -19,6 +19,7 @@
    - [isort](https://gitlab.com/PyCQA/isort)  # TODO
    - [bandit](https://gitlab.com/PyCQA/bandit)
  - [django-extensions](https://django-extensions.readthedocs.io/)
+ - [drf-spectacular](https://drf-spectacular.readthedocs.io/en/latest/)
 
 
 ## Local development setup
