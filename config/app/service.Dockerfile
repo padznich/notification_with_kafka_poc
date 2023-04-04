@@ -31,7 +31,7 @@ ADD pyproject.toml pyproject.toml
 ADD poetry.lock poetry.lock
 RUN poetry config virtualenvs.create false && poetry install --without dev
 
-COPY /src/notifications $APP_PATH
+COPY /src $APP_PATH
 COPY /config /config
 WORKDIR $APP_PATH
 
